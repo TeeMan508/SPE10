@@ -8,17 +8,17 @@
 #define Ny (220)
 #define Nz (85)
 
-#define SAVE_SEPARATED_MESH false
-#define SAVE_ALL_MESH false
+#define SAVE_SEPARATED_MESH true
+#define SAVE_ALL_MESH true
 
-/* Save all mesh to ["../output.vtk" = default] */
+/* Save all mesh to ["../data/output.vtk" = default] */
 void saveToVTK(std::vector <double> & kx, 
                std::vector <double> & ky, 
                std::vector <double> & kz,
                int shapeX = Nx,
                int shapeY = Ny,
                int shapeZ = Nz,
-               std::string filename = "../output.vtk")
+               std::string filename = "../data/output.vtk")
 {
     std::ofstream output_file;
     auto begin = std::chrono::steady_clock::now();
@@ -92,7 +92,7 @@ void readData(std::ifstream & file,
 }
 
 
-/* Separate piece of mesh with z = 50 and save to ["../sep_output.vtk" = default] */
+/* Separate piece of mesh with z = 50 and save to ["../data/sep_output.vtk" = default] */
 void separateData(
     std::vector <double> & kx, 
     std::vector <double> & ky, 
@@ -100,7 +100,7 @@ void separateData(
     std::vector <double> & kx_s, 
     std::vector <double> & ky_s, 
     std::vector <double> & kz_s,
-    std::string filename = "../sep_output.vtk")
+    std::string filename = "../data/sep_output.vtk")
 {
     const int z = 50;
     for (int y = 0; y < Ny+1; ++y)
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
     std::ofstream output;
     std::string filename;
 
-    filename = (argc < 2) ? "../spe_perm.dat" : argv[1];
+    filename = (argc < 2) ? "../data/spe_perm.dat" : argv[1];
     file.open(filename);
 
     if (!file) {

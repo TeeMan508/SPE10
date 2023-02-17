@@ -1,5 +1,5 @@
 build
 .vscode
-output.vtk
-sep_output.vtk
-por_perm_case2a.zip
+data/output.vtk
+data/sep_output.vtk
+data/por_perm_case2a.zip
