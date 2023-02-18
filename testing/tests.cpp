@@ -22,6 +22,8 @@ int main(int argc, char **argv) {
     A.insert_val(1,1,6.);
     A.insert_val(3,3,4.);
     A.insert_val(2,3,1.);
+    A.insert_val(0,2,1.5);
+
     A.print_coo();
     A.print_mat();
 //    std::cout<<std::endl<<A.len_mat();

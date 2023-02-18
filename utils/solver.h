@@ -2,7 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <array>
-#include "../utils/constants.h"
+#include "constants.h"
 #include "COO.h"
 
 #define ind(x, y, z) x+y*Nx+z*Nx*Ny
@@ -61,7 +61,7 @@ std::array<double,Nx*Ny> get_A(){
     std::array<double,Nx*Ny> A;
     for (int i = 0; i < Ny; ++i) {
         for (int j = 0; j < Nz; ++j) {
-
+            /*TODO*/
         }
     }
 }
