@@ -5,6 +5,23 @@
 #include <iostream>
 #include <iomanip>
 
+/*---------------------------------------------------
+ COO - format: ia - rows, ja - columns, a- values
+ EXAMPLE:
+ matrix:
+    3    5    0    0
+    0    6    0    0
+    0    0    0    1
+    0    0    0    4
+
+ COO-format:
+ ia = [0, 0, 1, 2, 3]
+ ja = [0, 1, 1, 3, 3]
+  a = [3, 5, 6, 1, 4]
+
+------------------------------------------------------- */
+
+
 class COO {
 private:
     std::vector<int> ia = {};
@@ -31,33 +48,16 @@ public:
             ja.push_back(col);
             a.push_back(value);
         } else {
-/*
- * Find the elements of the same row as the element being inserted into the matrix.
- *
- * If this is the first element in a specific row, the two iterators returned by equal_range()
- * point to the first element of the next larger row.
- *
- * If there are already other elements in the same row, the two iterators returned by equal_range()
- * point to the first element of the row and the first element of the next larger row.
- *
- * Using the iterators also calculate indices to the elements returned by equal_range().
- * These are used to index the corresponding elements in the other two vectors representing
- * the sparse matrix (ja and values).
- */
+
             const auto p = std::equal_range(ia.begin(), ia.end(), row);
             const auto index_of_first = p.first - ia.begin();
             const auto index_of_last = p.second - ia.begin();
 
-/*
- * Create iterators to point to the corresponding elements in ja.
- */
+
             const auto first = next(ja.begin(), index_of_first);
             const auto last = next(ja.begin(), index_of_last);
 
-/*
- * Find the correct position where the new element must be inserted and perform the corresponding
- * insertions into the three vectors representing the sparse matrix.
- */
+
             auto col_pos_it = upper_bound(first, last, col);
             auto pos = col_pos_it - ja.begin();
             ja.insert(col_pos_it, col);
