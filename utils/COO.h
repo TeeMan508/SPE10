@@ -16,13 +16,15 @@ public:
     COO() {
     }
 
+    //return number of rows of matrix (if matrix NxN returns N)
     int len_mat() {
         if (ia[ia.size() - 1] > ja[ja.size() - 1]) { return ia[ia.size() - 1] + 1; }
         else return ja[ja.size() - 1] + 1;
     }
 
-
-    int insert_val(int row, int col, double value) {
+//insert value to matrix
+    void insert_val(int row, int col, double value) {
+        if (value == 0){return;}
         if ((ia.empty()) ||
             ((row >= ia[ia.size() - 1]) && (col > ja[ja.size() - 1]))) {
             ia.push_back(row);
@@ -68,6 +70,7 @@ public:
         }
     }
 
+    //return value by index in coo-matrix (only active elements - not zeros)
     double operator()(int index) {
         return a[index];
     }
@@ -92,6 +95,7 @@ public:
         }
     }
 
+    //print matrix in coo format (ia - rows, ja - columns, a - values)
     void print_coo() {
         std::cout << "ia = [";
         for (int i = 0; i < ia.size() - 1; ++i) {
@@ -112,6 +116,7 @@ public:
         std::cout << a[a.size() - 1] << "]" << std::endl;
     }
 
+    //print matrix
     void print_mat() {
 //        std::cout << "len = " << len_mat() << std::endl;
         for (int i = 0; i < len_mat(); ++i) {
