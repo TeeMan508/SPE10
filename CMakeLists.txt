@@ -7,4 +7,6 @@ add_executable(
     spe10 source/main.cpp 
 )
 
+add_executable(test testing/tests.cpp)
+
 include_directories(${PROJECT_SOURCE_DIR})

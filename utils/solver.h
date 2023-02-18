@@ -1,9 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <array>
 #include "../utils/constants.h"
 
-#define ind(x,y,z) x+y*Nx+z*Nx*Ny
+#define ind(x, y, z) x+y*Nx+z*Nx*Ny
 
 
 /* Calculate transitivity between 2 neighbouring cells */
@@ -14,31 +15,35 @@ double computeTransability(
         std::vector<double> &kz) {
     double prevK, currK;
     if (axis == "x") {
-        prevK = kx[ind(x-1,y,z)]; //(x - 1) + y * Nx + z * Nx * Ny
-        currK = kx[ind(x,y,z)];  //x + y * Nx + z * Nx * Ny
+        prevK = kx[ind(x - 1, y, z)]; //(x - 1) + y * Nx + z * Nx * Ny
+        currK = kx[ind(x, y, z)];  //x + y * Nx + z * Nx * Ny
     } else if (axis == "y") {
-        prevK = ky[ind(x,y-1,z)];   //x + (y - 1) * Nx + z * Nx * Ny
-        currK = ky[ind(x,y,z)];
+        prevK = ky[ind(x, y - 1, z)];   //x + (y - 1) * Nx + z * Nx * Ny
+        currK = ky[ind(x, y, z)];
     } else if (axis == "z") {
-        prevK = kz[ind(x,y,z-1)];
-        currK = kz[ind(x,y,z)];
+        prevK = kz[ind(x, y, z - 1)];
+        currK = kz[ind(x, y, z)];
         std::cerr << "Only 2D examples now!" << std::endl;
         throw;
     } else {
         std::cerr << "Axis Error";
         throw;
     }
-    return (2*prevK*currK/(prevK+currK));
+    return (2 * prevK * currK / (prevK + currK));
 };
 
 
-double * d2p(double const& T, double const& T_prev, double const& T_next, std::string &axis){
-    double sheme[3];
+std::array<double,3> d2p(double const &T, double const &T_prev, double const &T_next, std::string &axis) {
+    std::array<double ,3> sheme;
     double h;
-    if (axis=="x") {h=hx;}
-    else if (axis=="y"){h=hy;}
-    else if (axis=="z"){
-        h=hz;
+    if (axis == "x") {
+        h = hx;
+        std::cout << "axis: x" << std::endl;
+    } else if (axis == "y") {
+        std::cout << "axis: y" << std::endl;
+        h = hy;
+    } else if (axis == "z") {
+        h = hz;
         std::cerr << "Only 2D examples now!" << std::endl;
         throw;
     } else {
