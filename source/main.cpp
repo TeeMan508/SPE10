@@ -111,6 +111,8 @@ void separateData(
     saveToVTK(kx_s, ky_s, kz_s, 60, 220, 1, filename);
 }
 
+
+/* Calculate transitivity between 2 neighbouring cells */
 double computeTransability(
     int x, int y, int z, std::string axis,
     std::vector <double> & kx,
@@ -141,6 +143,7 @@ double computeTransability(
     return 0;
 }
 
+/* Save the A-matrix as ["../data/A.mtx" = default]*/
 void save2DMatrix(
     std::vector <double> & A,
     int shapeX = Nx, int shapeY = Ny, int shapeZ = Nz,
@@ -160,6 +163,7 @@ void save2DMatrix(
     file.close();
 }
 
+/* Main algorithm that constructs the A-matrix*/
 void createMatrix(
     std::vector <double> & A,
     std::vector <double> & b,
@@ -171,15 +175,13 @@ void createMatrix(
         for (int y = 0; y < Ny+1; ++y)
             for (int x = 0; x < Nx+1; ++x) {
                 
-                if ((x == 0) || (y == 0) || (x == Nx) || (y == Ny)) {               // border condition
-                    continue;
-                }
+                if ((x == 0) || (y == 0) || (x == Nx) || (y == Ny))   continue;      // boundary condition (have already been filled with 0)
 
-                double T_xp1_x = computeTransability(x+1, y, z, "x", kx, ky, kz);   // T (x + 1, x)
-                double T_x_xm1 = computeTransability(x, y, z, "x", kx, ky, kz);     // T (x, x - 1)
+                double T_xp1_x = computeTransability(x + 1, y, z, "x", kx, ky, kz);  // T (x + 1, x)
+                double T_x_xm1 = computeTransability(x, y, z, "x", kx, ky, kz);      // T (x, x - 1)
 
-                double T_yp1_y = computeTransability(x, y+1, z, "y", kx, ky, kz);   // T (y + 1, y)
-                double T_y_ym1 = computeTransability(x, y, z, "y", kx, ky, kz);     // T (y, y - 1)
+                double T_yp1_y = computeTransability(x, y + 1, z, "y", kx, ky, kz);  // T (y + 1, y)
+                double T_y_ym1 = computeTransability(x, y, z, "y", kx, ky, kz);      // T (y, y - 1)
 
 
                 /*TODO*/
