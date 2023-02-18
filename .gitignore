@@ -1,4 +1,6 @@
 build
+.idea
+cmake-build-debug
 .vscode
 data/output.vtk
 data/sep_output.vtk

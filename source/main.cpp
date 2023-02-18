@@ -219,9 +219,9 @@ int main(int argc, char** argv)
         saveToVTK(kx, ky, kz);
     #endif
 
-    std::vector <double> A((Nx+1) * (Ny+1) * (Nz+1) *
-                           (Nx+1) * (Ny+1) * (Nz+1), 0), b((Nx+1) * (Ny+1) * (Nz+1), 0);
-
-    createMatrix(A, b, kx, ky, kz);
+//    std::vector <double> A((Nx+1) * (Ny+1) * (Nz+1) *
+//                           (Nx+1) * (Ny+1) * (Nz+1), 0), b((Nx+1) * (Ny+1) * (Nz+1), 0);
+//
+//    createMatrix(A, b, kx, ky, kz);
     return 0;
 }
