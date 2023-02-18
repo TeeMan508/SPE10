@@ -15,9 +15,7 @@
 void saveToVTK(std::vector <double> & kx, 
                std::vector <double> & ky, 
                std::vector <double> & kz,
-               int shapeX = Nx,
-               int shapeY = Ny,
-               int shapeZ = Nz,
+               int shapeX = Nx, int shapeY = Ny, int shapeZ = Nz,
                std::string filename = "../data/output.vtk")
 {
     std::ofstream output_file;
@@ -113,6 +111,81 @@ void separateData(
     saveToVTK(kx_s, ky_s, kz_s, 60, 220, 1, filename);
 }
 
+double computeTransability(
+    int x, int y, int z, std::string axis,
+    std::vector <double> & kx,
+    std::vector <double> & ky,
+    std::vector <double> & kz) 
+{
+    double prevK, currK;
+    if (axis == "x") 
+    {
+        prevK = kx[(x-1) + y * Nx + z * Nx * Ny];
+        currK = kx[x + y * Nx + z * Nx * Ny];
+    } 
+    else if (axis == "y") 
+    {   
+        prevK = ky[x + (y-1) * Nx + z * Nx * Ny];
+        currK = ky[x + y * Nx + z * Nx * Ny];
+    }
+    else if (axis == "z") 
+    {
+        prevK = kz[x + y * Nx + (z-1) * Nx * Ny];
+        currK = kz[x + y * Nx + z * Nx * Ny];
+        std::cerr << "Only 2D examples now!" << std::endl;
+        throw;
+    } else {
+        std::cerr << "Axis Error";
+        throw;
+    }
+    return 0;
+}
+
+void save2DMatrix(
+    std::vector <double> & A,
+    int shapeX = Nx, int shapeY = Ny, int shapeZ = Nz,
+    std::string filename = "../data/A.mtx"
+) 
+{
+    std::ofstream file;
+    file.open(filename);
+    
+    for (int y = 0; y < shapeX; ++y) // Is it shapeX? mb no?
+    {
+        for (int x = 0; x < shapeX; ++x) {
+            file << A[x] << " ";
+        }
+        file << std::endl;
+    }
+    file.close();
+}
+
+void createMatrix(
+    std::vector <double> & A,
+    std::vector <double> & b,
+    std::vector <double> & kx,
+    std::vector <double> & ky,
+    std::vector <double> & kz) 
+{
+    for (int z = 0; z < Nz+1; ++z) 
+        for (int y = 0; y < Ny+1; ++y)
+            for (int x = 0; x < Nx+1; ++x) {
+                
+                if ((x == 0) || (y == 0) || (x == Nx) || (y == Ny)) {               // border condition
+                    continue;
+                }
+
+                double T_xp1_x = computeTransability(x+1, y, z, "x", kx, ky, kz);   // T (x + 1, x)
+                double T_x_xm1 = computeTransability(x, y, z, "x", kx, ky, kz);     // T (x, x - 1)
+
+                double T_yp1_y = computeTransability(x, y+1, z, "y", kx, ky, kz);   // T (y + 1, y)
+                double T_y_ym1 = computeTransability(x, y, z, "y", kx, ky, kz);     // T (y, y - 1)
+
+
+                /*TODO*/
+
+            }
+}
 
 /* Run all functions */
 int main(int argc, char** argv) 
@@ -144,5 +217,9 @@ int main(int argc, char** argv)
         saveToVTK(kx, ky, kz);
     #endif
 
+    std::vector <double> A((Nx+1) * (Ny+1) * (Nz+1) *
+                           (Nx+1) * (Ny+1) * (Nz+1), 0), b((Nx+1) * (Ny+1) * (Nz+1), 0);
+
+    createMatrix(A, b, kx, ky, kz);
     return 0;
 }
