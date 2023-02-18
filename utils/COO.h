@@ -70,6 +70,7 @@ public:
         }
     }
 
+
     //return value by index in coo-matrix (only active elements - not zeros)
     double operator()(int index) {
         return a[index];
