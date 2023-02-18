@@ -63,7 +63,8 @@ void createMatrix(
         std::vector<double> &kx,
         std::vector<double> &ky,
         std::vector<double> &kz) {
-    for (int z = 0; z < Nz + 1; ++z)
+//    for (int z = 0; z < Nz + 1; ++z)    //<---uncomment this when move on 3d model
+        int z=50;  //our layer            //<---  comment this when move on 3d model
         for (int y = 0; y < Ny + 1; ++y)
             for (int x = 0; x < Nx + 1; ++x) {
 
