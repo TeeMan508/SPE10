@@ -2,7 +2,8 @@
 #include <vector>
 #include <cmath>
 #include <array>
-#include "../utils/constants.h"
+#include "constants.h"
+#include "COO.h"
 
 #define ind(x, y, z) x+y*Nx+z*Nx*Ny
 
@@ -44,7 +45,7 @@ std::array<double,3> d2p(double const &T, double const &T_prev, double const &T_
         h = hy;
     } else if (axis == "z") {
         h = hz;
-        std::cerr << "Only 2D examples now!" << std::endl;
+        std::cerr << "Only 2D examples now! we dont know how to do 3d   if u are too smart you can write it by yourself" << std::endl;
         throw;
     } else {
         std::cerr << "Axis Error";
@@ -56,3 +57,11 @@ std::array<double,3> d2p(double const &T, double const &T_prev, double const &T_
     return sheme;
 };
 
+std::array<double,Nx*Ny> get_A(){
+    std::array<double,Nx*Ny> A;
+    for (int i = 0; i < Ny; ++i) {
+        for (int j = 0; j < Nz; ++j) {
+            /*TODO*/
+        }
+    }
+}
