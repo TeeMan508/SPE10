@@ -154,12 +154,3 @@ std::array<double,3> d2p(double const &T, double const &T_prev, double const &T_
     sheme[2] = T_next / (h * h);
     return sheme;
 };
-
-std::array<double,Nx*Ny> get_A(){
-    std::array<double,Nx*Ny> A;
-    for (int i = 0; i < Ny; ++i) {
-        for (int j = 0; j < Nz; ++j) {
-            /*TODO*/
-        }
-    }
-}
