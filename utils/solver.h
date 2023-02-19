@@ -4,6 +4,7 @@
 #include <array>
 #include "constants.h"
 #include "COO.h"
+#include <fstream>
 
 #define ind(x, y, z) x+y*Nx+z*Nx*Ny
 
