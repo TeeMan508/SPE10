@@ -16,16 +16,16 @@ int main(int argc, char **argv) {
 //    res = d2p(T, T_prev, T_next, axis);
 //    std::cout<<"res: "<<res[0]<<" "<<res[1]<<" "<<res[2]<<std::endl;
 
-    COO A;
-    A.insert_val(0,1,5.);
-    A.insert_val(0,0,3.);
-    A.insert_val(1,1,6.);
-    A.insert_val(3,3,4.);
-    A.insert_val(2,3,1.);
-    A.insert_val(0,2,1.5);
-
-    A.print_coo();
-    A.print_mat();
+//    COO A;
+//    A.insert_val(0,1,5.);
+//    A.insert_val(0,0,3.);
+//    A.insert_val(1,1,6.);
+//    A.insert_val(3,3,4.);
+//    A.insert_val(2,3,1.);
+//    A.insert_val(0,2,1.5);
+//
+//    A.print_coo();
+//    A.print_mat();
 //    std::cout<<std::endl<<A.len_mat();
 //    A(0,1);
 //    A(1,1);
@@ -33,7 +33,29 @@ int main(int argc, char **argv) {
 //    A(3,3);
 
 //    std::cout<<A(0,1);
-    std::cout<<A(2);
+//    std::cout<<A(2);
+//A(5);
+
+
+    COO A;
+    std::ifstream file;
+    std::ofstream output;
+    std::string filename;
+
+    filename = (argc < 2) ? "../data/spe_perm.dat" : argv[1];
+    file.open(filename);
+
+    if (!file) {
+        std::cerr << "Error:\tFile couldn't be opened" << std::endl;
+        return -1;
+    }
+    std::cout << "Read file:\t\t\t" << filename << std::endl;
+
+    std::vector<double> kx, ky, kz;
+    readData(file, kx, ky, kz);
+    A= get_SLAE(kx,ky,kz);
+    A.write_to_file();
+
 
     return 0;
 }
