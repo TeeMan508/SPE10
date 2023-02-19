@@ -92,7 +92,7 @@ COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> k
             A.insert_val(i,i+1,Tau1);
         }
         //lowet
-        if (i>(Ny-1)*Nx){
+        if (i>=(Ny-1)*Nx){
             b[i]+=-2*ky[i]/(hy*hy)*dirichlet_down;
             Tau4=2*ky[i]/(hy*hy);
         }
