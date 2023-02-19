@@ -136,8 +136,11 @@ public:
         std::string filename = "../data/A.mtx";
         std::ofstream file;
         file.open(filename);
+        file<<"%%MatrixMarket matrix coordinate real general"<<std::endl;
+        file<<len_mat()<<" "<<len_mat()<<" "<<ia.size()<<std::endl;
         for (int i = 0; i < ia.size(); ++i) {
             file<<ia[i]<<" "<<ja[i]<<" "<<a[i]<<std::endl;
         }
+        file.close();
     }
 };
