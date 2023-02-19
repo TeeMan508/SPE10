@@ -37,7 +37,7 @@ public:
 
     //return number of rows of matrix (if matrix NxN returns N)
     int len_mat() {
-        if (ia[ia.size() - 1] > ja[ja.size() - 1]) { return ia[ia.size() - 1] + 1; }
+        if (ia[ia.size() - 1] > ja[ja.size() - 1]) { return ia[ia.size() - 1] + 1; }  // !!!!!!!!maybe  wrong!!!!!!!!!!
         else return ja[ja.size() - 1] + 1;
     }
 

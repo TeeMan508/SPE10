@@ -1,9 +1,7 @@
-cmake_minimum_required(VERSION 2.14)
+cmake_minimum_required(VERSION 2.15)
 
-project(SPE10 DESCRIPTION "Solving differential equation" LANGUAGES CXX)
-
+project(SPE10 DESCRIPTION "solving differential equation" LANGUAGES CXX)
 
 add_executable(spe10 source/main.cpp)
 add_executable(test testing/tests.cpp)
 
-include_directories(${PROJECT_SOURCE_DIR})

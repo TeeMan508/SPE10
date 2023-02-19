@@ -8,6 +8,103 @@
 #define ind(x, y, z) x+y*Nx+z*Nx*Ny
 
 
+/*
+         *
+         |
+         |
+        [2]
+         |
+         |
+*-[3]---[0]----[1]-*
+         |
+         |
+        [4]
+         |
+         |
+         *
+
+
+for i=0:n*m
+ {
+
+ i=6
+    [1]: 2*Kx[i] * Kx[i+1]/((hx^2)*(Kx[i] + Kx[i+1]))=Tau1
+    [3]: 2*Kx[i] * Kx[i-1]/((hx^2)*(Kx[i] + Kx[i-1]))=Tau3
+    [2]: 2*Ky[i] * Ky[i-Nx]/((hy^2)*(Ky[i] + Ky[i-Nx]))=Tau2
+    [4]: 2*Ky[i] * Ky[i+Nx]/((hy^2)*(Ky[i] + Ky[i+Nx]))=Tau4
+    [0]: -(Tau1+Tau2+Tau3+Tau4) = Tau0
+
+    A=(Nx*Ny)x(Nx*Ny)
+
+    A[i,i+1] = Tau1
+    A[i,i] = Tau0
+    A[i,i-1] = Tau3
+    A[i,i-Nx] = Tau2
+    A[i,i+Nx] = Tau4
+    b=0
+
+    if i<Nx:
+      [2]: b=-2Ky[i]/(hy**2) * (dirichlet_up)
+            A[i,i] += 2Ky[i]/(hy**2)
+       [3]: b+=-2Kx[i]/(hx**2) * (dirichlet_left)
+            A[i,i] += 2Kx[i]/(hx**2)
+
+ */
+
+
+
+
+COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> kz){
+    COO A;
+    double Tau1,Tau2,Tau3,Tau4,Tau0,b[Nx*Ny];
+    for (int i = 0; i < Nx*Ny; ++i) {
+
+        b[i]=0;
+        //if upper boundary
+        if (i<Nx){
+              b[i]+=-2*ky[i]/(hy*hy)*dirichlet_up;
+              Tau2=2*ky[i]/(hy*hy);
+        }
+        else{
+            Tau2 = 2*ky[i] * ky[i-Nx]/((hy^2)*(ky[i] + ky[i-Nx]));
+            A.insert_val(i,i-Nx,Tau2);
+//            A(i,i-Nx) = Tau2
+        }
+
+        //if left boundary
+        if (i%Nx==0){
+            b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_left);
+            Tau3 = 2 * kx[i] / (hx * hx);
+        }
+        else{
+            Tau3 = 2*kx[i] * kx[i-1]/((hx^2)*(kx[i] + kx[i-1]));
+            A.insert_val(i,i-1,Tau3);
+        }
+
+        //if right boundary
+        if ((i+1)%Nx){
+            b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_up);
+            Tau1 = 2 * kx[i] / (hx * hx);
+        }
+        else{
+            Tau1 =2*kx[i] * kx[i+1]/((hx^2)*(kx[i] + kx[i+1]));
+            A.insert_val(i,i+1,Tau1);
+        }
+        if (i>(Ny-1)*Nx){
+            b[i]+=-2*ky[i]/(hy*hy)*dirichlet_down;
+            Tau4=2*ky[i]/(hy*hy);
+        }
+        else{
+            Tau4 = 2*ky[i] * ky[i+Nx]/((hy^2)*(ky[i] + ky[i+Nx]));
+            A.insert_val(i,i+Nx,Tau4);
+        }
+        Tau0 = Tau1+Tau2+Tau3+Tau4;
+        A.insert_val(i,i,Tau0);
+    }
+    return A;
+}
+
+
 /* Calculate transitivity between 2 neighbouring cells */
 double computeTransability(
         int x, int y, int z, std::string axis,
@@ -45,7 +142,7 @@ std::array<double,3> d2p(double const &T, double const &T_prev, double const &T_
         h = hy;
     } else if (axis == "z") {
         h = hz;
-        std::cerr << "Only 2D examples now! we dont know how to do 3d   if u are too smart you can write it by yourself" << std::endl;
+        std::cerr << "Only 2D examples now!" << std::endl;
         throw;
     } else {
         std::cerr << "Axis Error";
