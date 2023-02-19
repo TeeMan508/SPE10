@@ -131,4 +131,13 @@ public:
             std::cout<<std::endl;
         }
     }
+
+    void write_to_file(){
+        std::string filename = "../data/A.mtx";
+        std::ofstream file;
+        file.open(filename);
+        for (int i = 0; i < ia.size(); ++i) {
+            file<<ia[i]<<" "<<ja[i]<<" "<<a[i]<<std::endl;
+        }
+    }
 };

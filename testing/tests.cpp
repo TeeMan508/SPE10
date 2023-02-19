@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     std::vector<double> kx, ky, kz;
     readData(file, kx, ky, kz);
     A= get_SLAE(kx,ky,kz);
-    A.print_coo();
+    A.write_to_file();
 
 
     return 0;

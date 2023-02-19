@@ -82,14 +82,15 @@ COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> k
         }
 
         //if right boundary
-        if ((i+1)%Nx){
-            b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_up);
+        if ((i+1)%Nx==0){
+            b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_right);
             Tau1 = 2 * kx[i] / (hx * hx);
         }
         else{
             Tau1 =2*kx[i] * kx[i+1]/((hx^2)*(kx[i] + kx[i+1]));
             A.insert_val(i,i+1,Tau1);
         }
+        //lowet
         if (i>(Ny-1)*Nx){
             b[i]+=-2*ky[i]/(hy*hy)*dirichlet_down;
             Tau4=2*ky[i]/(hy*hy);
@@ -99,7 +100,7 @@ COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> k
             A.insert_val(i,i+Nx,Tau4);
         }
         Tau0 = Tau1+Tau2+Tau3+Tau4;
-        A.insert_val(i,i,Tau0);
+        A.insert_val(i,i,-Tau0);
     }
     return A;
 }
