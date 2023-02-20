@@ -9,13 +9,14 @@
 
 
 /*
+                    S   C   H   E   M   E
          *
          |
          |
         [2]
          |
          |
-*-[3]---[0]----[1]-*
+*-[3]---[0]---[1]-*
          |
          |
         [4]
@@ -24,32 +25,31 @@
          *
 
 
-for i=0:n*m
- {
+for i = 0 : n * m
+    i = 6
+    [1]: 2 * Kx[i] * Kx[i+1] / ((hx^2) * (Kx[i] + Kx[i+1])) = Tau1
+    [3]: 2 * Kx[i] * Kx[i-1] / ((hx^2) * (Kx[i] + Kx[i-1])) = Tau3
+    [2]: 2 * Ky[i] * Ky[i-Nx] / ((hy^2) * (Ky[i] + Ky[i-Nx])) = Tau2
+    [4]: 2 * Ky[i] * Ky[i+Nx] / ((hy^2) * (Ky[i] + Ky[i+Nx])) = Tau4
+    [0]: -(Tau1 + Tau2 + Tau3 + Tau4) = Tau0
 
- i=6
-    [1]: 2*Kx[i] * Kx[i+1]/((hx^2)*(Kx[i] + Kx[i+1]))=Tau1
-    [3]: 2*Kx[i] * Kx[i-1]/((hx^2)*(Kx[i] + Kx[i-1]))=Tau3
-    [2]: 2*Ky[i] * Ky[i-Nx]/((hy^2)*(Ky[i] + Ky[i-Nx]))=Tau2
-    [4]: 2*Ky[i] * Ky[i+Nx]/((hy^2)*(Ky[i] + Ky[i+Nx]))=Tau4
-    [0]: -(Tau1+Tau2+Tau3+Tau4) = Tau0
+    A = (Nx * Ny) x (Nx * Ny)
 
-    A=(Nx*Ny)x(Nx*Ny)
-
-    A[i,i+1] = Tau1
-    A[i,i] = Tau0
-    A[i,i-1] = Tau3
-    A[i,i-Nx] = Tau2
-    A[i,i+Nx] = Tau4
+    A[i, i + 1] = Tau1
+    A[i, i] = Tau0
+    A[i, i - 1] = Tau3
+    A[i, i - Nx] = Tau2
+    A[i, i + Nx] = Tau4
     b = 0
 
-    if i<Nx:
-      [2]: b=-2Ky[i]/(hy**2) * (dirichlet_up)
-            A[i,i] += 2Ky[i]/(hy**2)
-       [3]: b+=-2Kx[i]/(hx**2) * (dirichlet_left)
-            A[i,i] += 2Kx[i]/(hx**2)
+    if i < Nx:
+        [2]: b = -2Ky[i] / (hy**2) * (dirichlet_up)
+            A[i,i] += 2Ky[i] / (hy**2)
+        [3]: b += -2Kx[i] / (hx**2) * (dirichlet_left)
+            A[i,i] += 2Kx[i] / (hx**2)
 
- */
+                    S   C   H   E   M   E
+*/
 
 
 void get_SLAE(
@@ -73,7 +73,7 @@ void get_SLAE(
         }
         else {
             Tau2 = 2 * ky[i] * ky[i-Nx] / ((hy^2) * (ky[i] + ky[i-Nx]));
-            A.insert_val(i, i-Nx, Tau2);
+            A.insert_val(i, i - Nx, Tau2);
         }
 
         // Left boundary
@@ -83,18 +83,19 @@ void get_SLAE(
         }
         else {
             Tau3 = 2 * kx[i] * kx[i-1] / ((hx^2) * (kx[i] + kx[i-1]));
-            A.insert_val(i, i-1, Tau3);
+            A.insert_val(i, i - 1, Tau3);
         }
 
         // Right boundary
-        if ((i+1) % Nx == 0){
+        if ((i + 1) % Nx == 0){
             b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_right);
             Tau1 = 2 * kx[i] / (hx * hx);
         }
         else {
             Tau1 = 2 * kx[i] * kx[i+1] / ((hx^2) * (kx[i] + kx[i+1]));
-            A.insert_val(i, i+1, Tau1);
+            A.insert_val(i, i + 1, Tau1);
         }
+
         // Bottom boundary
         if (i >= (Ny - 1) * Nx){
             b[i] += -2 * ky[i] / (hy * hy) * dirichlet_down;
