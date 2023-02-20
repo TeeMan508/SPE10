@@ -5,3 +5,5 @@ cmake-build-debug
 data/output.vtk
 data/sep_output.vtk
 data/por_perm_case2a.zip
+data/A.mtx
+data/b.txt

@@ -99,24 +99,3 @@ void readData(std::ifstream &file,
     std::cout << "Size of mesh:\t\t\t" << Nx << "x" << Ny << "x" << Nz << std::endl;
     file.close();
 };
-
-
-/* Save the A-matrix as ["../data/A.mtx" = default]*/
-void save2DMatrix(
-        std::vector<double> &A,
-        int shapeX = Nx, int shapeY = Ny, int shapeZ = Nz,
-        std::string filename = "../data/A.mtx"
-) {
-    std::ofstream file;
-    file.open(filename);
-
-    for (int y = 0; y < shapeX; ++y) // Is it shapeX? mb no?
-    {
-        for (int x = 0; x < shapeX; ++x) {
-            file << A[x] << " ";
-        }
-        file << std::endl;
-    }
-    file.close();
-};
-

@@ -52,8 +52,6 @@ for i=0:n*m
  */
 
 
-
-
 COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> kz){
     COO A;
     double Tau1,Tau2,Tau3,Tau4,Tau0,b[Nx*Ny];
@@ -114,10 +112,10 @@ double computeTransability(
         std::vector<double> &kz) {
     double prevK, currK;
     if (axis == "x") {
-        prevK = kx[ind(x - 1, y, z)]; //(x - 1) + y * Nx + z * Nx * Ny
-        currK = kx[ind(x, y, z)];  //x + y * Nx + z * Nx * Ny
+        prevK = kx[ind(x - 1, y, z)];  //(x - 1) + y * Nx + z * Nx * Ny
+        currK = kx[ind(x, y, z)];      //x + y * Nx + z * Nx * Ny
     } else if (axis == "y") {
-        prevK = ky[ind(x, y - 1, z)];   //x + (y - 1) * Nx + z * Nx * Ny
+        prevK = ky[ind(x, y - 1, z)];  //x + (y - 1) * Nx + z * Nx * Ny
         currK = ky[ind(x, y, z)];
     } else if (axis == "z") {
         prevK = kz[ind(x, y, z - 1)];
