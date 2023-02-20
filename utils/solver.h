@@ -100,6 +100,14 @@ COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> k
         Tau0 = Tau1 + Tau2 + Tau3 + Tau4;
         A.insert_val(i, i, -Tau0);
     }
+    std::string filename = "../data/b.txt";
+    std::ofstream file;
+    file.open(filename);
+    file<<Nx*Ny<<std::endl;
+    for (int i = 0; i < Nx*Ny; ++i) {
+        file<<b[i]<<std::endl;
+    }
+    file.close();
     return A;
 }
 
