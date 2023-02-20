@@ -1,4 +1,4 @@
-                                            /*  D   R   A   F   T   */
+/*  D   R   A   F   T   */
 
 #include <iostream>
 #include <vector>
@@ -10,57 +10,43 @@
 
 /* Run all functions */
 int main(int argc, char **argv) {
-//    double T = 1;
-//    double T_prev = 1;
-//    double T_next = 1;
-//    std::array<double,3> res;
-//    std::string axis = "z";
-//    res = d2p(T, T_prev, T_next, axis);
-//    std::cout<<"res: "<<res[0]<<" "<<res[1]<<" "<<res[2]<<std::endl;
-
-//    COO A;
-//    A.insert_val(0,1,5.);
-//    A.insert_val(0,0,3.);
-//    A.insert_val(1,1,6.);
-//    A.insert_val(3,3,4.);
-//    A.insert_val(2,3,1.);
-//    A.insert_val(0,2,1.5);
-//
-//    A.print_coo();
-//    A.print_mat();
-//    std::cout<<std::endl<<A.len_mat();
-//    A(0,1);
-//    A(1,1);
-//    A(2,3);
-//    A(3,3);
-
-//    std::cout<<A(0,1);
-//    std::cout<<A(2);
-//A(5);
-
-    COO A;
-    std::ifstream file;
+    std::ifstream file_perm, file_phi;
     std::ofstream output;
-    std::string filename;
+    std::string filename_perm, filename_phi;
 
-    filename = (argc < 2) ? "../data/spe_perm.dat" : argv[1];
-    file.open(filename);
+    filename_perm = (argc < 2) ? "../data/spe_perm.dat" : argv[1];
+    filename_phi = (argc < 3) ? "../data/spe_phi.dat" : argv[2];
+    file_perm.open(filename_perm);
+    file_phi.open(filename_phi);
 
-    if (!file) {
+    if (!file_perm or !file_phi) {
         std::cerr << "Error:\tFile couldn't be opened" << std::endl;
         return -1;
     }
-    std::cout << "Read file:\t\t\t" << filename << std::endl;
+    std::cout << "Read file:\t\t\t" << filename_perm << std::endl;
+    std::cout << "Read file:\t\t\t" << filename_phi << std::endl;
 
-    std::vector<double> kx, ky, kz;
-    readData(file, kx, ky, kz);
-    std::vector<double> kx_s, ky_s, kz_s;
-    separateData(kx, ky, kz, kx_s, ky_s, kz_s);
+    std::vector<double> kx, ky, kz, phiArray;
+    readData(file_perm, file_phi, kx, ky, kz, phiArray);
 
-     A = get_SLAE(kx_s, ky_s, kz_s);
-     A.write_to_file();
+#if GET_SEPARATED_MESH
+    std::cout << "\nSave separated layer with z = 50" << std::endl;
+    std::vector<double> kx_s, ky_s, kz_s, phiArray_s;
+    separateData(kx, ky, kz, phiArray, kx_s, ky_s, kz_s, phiArray_s);
+#endif
+
+#if CREATE_SEPARATED_MATRIX
+    COO A;
+    double b[Nx * Ny];
+    get_SLAE(A, b, kx_s, ky_s, kz_s);
+#endif
+
+#if SAVE_ALL_MESH_AS_VTK
+    std::cout << "\nSave all mesh" << std::endl;
+saveToVTK(kx, ky, kz, phiArray);
+#endif
 
     return 0;
 }
 
-                                            /*  D   R   A   F   T   */
+/*  D   R   A   F   T   */
