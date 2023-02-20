@@ -5,7 +5,7 @@
 #include "constants.h"
 #include "COO.h"
 
-#define ind(x, y, z) x+y*Nx+z*Nx*Ny
+#define ind(x, y, z) ((x)+(y)*Nx+(z)*Nx*Ny)
 
 
 /*
@@ -41,7 +41,7 @@ for i=0:n*m
     A[i,i-1] = Tau3
     A[i,i-Nx] = Tau2
     A[i,i+Nx] = Tau4
-    b=0
+    b = 0
 
     if i<Nx:
       [2]: b=-2Ky[i]/(hy**2) * (dirichlet_up)
@@ -58,47 +58,47 @@ COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> k
     for (int i = 0; i < Nx*Ny; ++i) {
 
         b[i]=0;
-        //if upper boundary
-        if (i<Nx){
-              b[i]+=-2*ky[i]/(hy*hy)*dirichlet_up;
-              Tau2=2*ky[i]/(hy*hy);
+        // Upper boundary
+        if (i < Nx){
+              b[i] += -2 * ky[i] / (hy * hy) * dirichlet_up;
+              Tau2 = 2 * ky[i] / (hy * hy);
         }
-        else{
-            Tau2 = 2*ky[i] * ky[i-Nx]/((hy^2)*(ky[i] + ky[i-Nx]));
-            A.insert_val(i,i-Nx,Tau2);
-//            A(i,i-Nx) = Tau2
+        else {
+            Tau2 = 2 * ky[i] * ky[i-Nx] / ((hy^2) * (ky[i] + ky[i-Nx]));
+            A.insert_val(i, i-Nx, Tau2);
+            // A(i,i-Nx) = Tau2
         }
 
-        //if left boundary
-        if (i%Nx==0){
+        // Left boundary
+        if (i % Nx == 0){
             b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_left);
             Tau3 = 2 * kx[i] / (hx * hx);
         }
-        else{
-            Tau3 = 2*kx[i] * kx[i-1]/((hx^2)*(kx[i] + kx[i-1]));
-            A.insert_val(i,i-1,Tau3);
+        else {
+            Tau3 = 2 * kx[i] * kx[i-1] / ((hx^2) * (kx[i] + kx[i-1]));
+            A.insert_val(i, i-1, Tau3);
         }
 
-        //if right boundary
-        if ((i+1)%Nx==0){
+        // Right boundary
+        if ((i+1) % Nx == 0){
             b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_right);
             Tau1 = 2 * kx[i] / (hx * hx);
         }
-        else{
-            Tau1 =2*kx[i] * kx[i+1]/((hx^2)*(kx[i] + kx[i+1]));
-            A.insert_val(i,i+1,Tau1);
+        else {
+            Tau1 = 2 * kx[i] * kx[i+1] / ((hx^2) * (kx[i] + kx[i+1]));
+            A.insert_val(i, i+1, Tau1);
         }
-        //lowet
-        if (i>(Ny-1)*Nx){
-            b[i]+=-2*ky[i]/(hy*hy)*dirichlet_down;
-            Tau4=2*ky[i]/(hy*hy);
+        // Bottom boundary
+        if (i > (Ny - 1) * Nx){
+            b[i] += -2 * ky[i] / (hy * hy) * dirichlet_down;
+            Tau4 = 2 * ky[i] / (hy * hy);
         }
-        else{
-            Tau4 = 2*ky[i] * ky[i+Nx]/((hy^2)*(ky[i] + ky[i+Nx]));
-            A.insert_val(i,i+Nx,Tau4);
+        else {
+            Tau4 = 2 * ky[i] * ky[i+Nx] / ((hy^2) * (ky[i] + ky[i+Nx]));
+            A.insert_val(i, i+Nx, Tau4);
         }
-        Tau0 = Tau1+Tau2+Tau3+Tau4;
-        A.insert_val(i,i,-Tau0);
+        Tau0 = Tau1 + Tau2 + Tau3 + Tau4;
+        A.insert_val(i, i, -Tau0);
     }
     return A;
 }
