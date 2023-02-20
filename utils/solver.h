@@ -52,12 +52,19 @@ for i=0:n*m
  */
 
 
-COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> kz){
+COO get_SLAE(
+    std::vector<double> kx,
+    std::vector<double> ky,
+    std::vector<double> kz)
+{
+    std::cout << "\nStart creating matrix A and vector b" << std::endl;
+    auto begin = std::chrono::steady_clock::now();
     COO A;
-    double Tau1,Tau2,Tau3,Tau4,Tau0,b[Nx*Ny];
+    double Tau1,Tau2,Tau3,Tau4,Tau0, b[Nx*Ny];
     for (int i = 0; i < Nx*Ny; ++i) {
 
-        b[i]=0;
+        b[i] = 0;
+
         // Upper boundary
         if (i < Nx){
               b[i] += -2 * ky[i] / (hy * hy) * dirichlet_up;
@@ -66,7 +73,6 @@ COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> k
         else {
             Tau2 = 2 * ky[i] * ky[i-Nx] / ((hy^2) * (ky[i] + ky[i-Nx]));
             A.insert_val(i, i-Nx, Tau2);
-            // A(i,i-Nx) = Tau2
         }
 
         // Left boundary
@@ -100,14 +106,30 @@ COO get_SLAE(std::vector<double> kx,std::vector<double> ky,std::vector<double> k
         Tau0 = Tau1 + Tau2 + Tau3 + Tau4;
         A.insert_val(i, i, -Tau0);
     }
-    std::string filename = "../data/b.txt";
+    auto end = std::chrono::steady_clock::now();
+    auto reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+
+    std::cout << "Time for creating matrix A and vector b:\t" << (double) reading_time.count() / 1000 << " s" << std::endl;
+
+    begin = std::chrono::steady_clock::now();
+    std::string output_path_A = "../data/A.mtx";
+    std::cout << "\nSave matrix A as:\t" << output_path_A << std::endl;
+    A.write_to_file(output_path_A);
+
+    std::string output_path_b = "../data/b.txt";
     std::ofstream file;
-    file.open(filename);
-    file<<Nx*Ny<<std::endl;
+    std::cout << "Save vector b as:\t" << output_path_b << std::endl;
+    file.open(output_path_b);
+    file << Nx*Ny << std::endl;
     for (int i = 0; i < Nx*Ny; ++i) {
-        file<<b[i]<<std::endl;
+        file << b[i] << std::endl;
     }
     file.close();
+    end = std::chrono::steady_clock::now();
+    reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+
+    std::cout << "Time for saving matrix A and vector b:\t\t" << (double) reading_time.count() / 1000 << " s" << std::endl;
+
     return A;
 }
 

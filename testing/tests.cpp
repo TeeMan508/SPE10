@@ -36,7 +36,6 @@ int main(int argc, char **argv) {
 //    std::cout<<A(2);
 //A(5);
 
-
     COO A;
     std::ifstream file;
     std::ofstream output;

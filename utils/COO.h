@@ -123,15 +123,14 @@ public:
     void print_matrix() {
         for (int i = 0; i < len_mat(); ++i) {
             for (int j = 0; j < len_mat(); ++j) {
-
                 std::cout<<std::setw(5)<<this->operator()(i,j);
             }
             std::cout<<std::endl;
         }
     }
 
-    void write_to_file(){
-        std::string filename = "../data/A.mtx";
+    /* Save matrix in COO format to ["../data/A.mtx" = default]*/
+    void write_to_file(std::string filename = "../data/A.mtx"){
         std::ofstream file;
         file.open(filename);
         for (int i = 0; i < ia.size(); ++i) {

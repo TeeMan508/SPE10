@@ -1,4 +1,11 @@
 #pragma once
+
+/* Options for run */
+#define SAVE_SEPARATED_MESH true
+#define SAVE_ALL_MESH true
+#define CREATE_SEPARATED_MATRIX true
+
+/* Params for problem */
 #define Nx (60)
 #define Ny (220)
 #define Nz (85)
