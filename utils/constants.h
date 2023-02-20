@@ -1,8 +1,8 @@
 #pragma once
 
 /* Options for run */
-#define SAVE_SEPARATED_MESH true
-#define SAVE_ALL_MESH true
+#define SAVE_ALL_MESH_AS_VTK false
+#define GET_SEPARATED_MESH true
 #define CREATE_SEPARATED_MATRIX true
 
 /* Params for problem */

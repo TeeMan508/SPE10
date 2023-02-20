@@ -52,15 +52,16 @@ for i=0:n*m
  */
 
 
-COO get_SLAE(
+void get_SLAE(
+    COO A,
+    double b[Nx*Ny],
     std::vector<double> kx,
     std::vector<double> ky,
     std::vector<double> kz)
 {
     std::cout << "\nStart creating matrix A and vector b" << std::endl;
     auto begin = std::chrono::steady_clock::now();
-    COO A;
-    double Tau1,Tau2,Tau3,Tau4,Tau0, b[Nx*Ny];
+    double Tau0, Tau1, Tau2, Tau3, Tau4;
     for (int i = 0; i < Nx*Ny; ++i) {
 
         b[i] = 0;
@@ -129,8 +130,6 @@ COO get_SLAE(
     reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
 
     std::cout << "Time for saving matrix A and vector b:\t\t" << (double) reading_time.count() / 1000 << " s" << std::endl;
-
-    return A;
 }
 
 

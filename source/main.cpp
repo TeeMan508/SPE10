@@ -24,19 +24,21 @@ int main(int argc, char **argv) {
     std::vector<double> kx, ky, kz;
     readData(file, kx, ky, kz);
 
-#if SAVE_SEPARATED_MESH
+#if GET_SEPARATED_MESH
     std::cout << "\nSave separated layer with z = 50" << std::endl;
     std::vector<double> kx_s, ky_s, kz_s;
     separateData(kx, ky, kz, kx_s, ky_s, kz_s);
 #endif
 
-#if SAVE_ALL_MESH
-    std::cout << "\nSave all mesh" << std::endl;
-    saveToVTK(kx, ky, kz);
+#if CREATE_SEPARATED_MATRIX
+    COO A;
+    double b[Nx*Ny];
+    get_SLAE(A, b, kx_s, ky_s, kz_s);
 #endif
 
-#if CREATE_SEPARATED_MATRIX
-    COO A = get_SLAE(kx_s, ky_s, kz_s);
+#if SAVE_ALL_MESH_AS_VTK
+    std::cout << "\nSave all mesh" << std::endl;
+    saveToVTK(kx, ky, kz);
 #endif
 
     return 0;
