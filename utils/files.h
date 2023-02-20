@@ -8,6 +8,7 @@
 void saveToVTK(std::vector<double> &kx,
                std::vector<double> &ky,
                std::vector<double> &kz,
+               std::vector<double> &phiArray,
                int shapeX = Nx, int shapeY = Ny, int shapeZ = Nz,
                std::string filename = "../data/output.vtk") {
     std::ofstream output_file;
@@ -36,6 +37,22 @@ void saveToVTK(std::vector<double> &kx,
     for (int i = 0; i < shapeX * shapeY * shapeZ; ++i)
         output_file << kx[i] << " " << ky[i] << " " << kz[i] << std::endl;
 
+    output_file << "POINT_DATA " << (shapeX + 1) * (shapeY + 1) * (shapeZ + 1) << std::endl;
+    output_file << "CELL_DATA " << shapeX * shapeY * shapeZ << std::endl;
+    output_file << "SCALARS S double 1" << std::endl;
+    output_file << "LOOKUP_TABLE default" << std::endl;
+
+    for (int i = 0; i < shapeX * shapeY * shapeZ; ++i)
+        output_file << 0.5 << std::endl;
+
+    output_file << "POINT_DATA " << (shapeX + 1) * (shapeY + 1) * (shapeZ + 1) << std::endl;
+    output_file << "CELL_DATA " << shapeX * shapeY * shapeZ << std::endl;
+    output_file << "SCALARS Phi double 1" << std::endl;
+    output_file << "LOOKUP_TABLE default" << std::endl;
+
+    for (int i = 0; i < shapeX * shapeY * shapeZ; ++i)
+        output_file << phiArray[i] << std::endl;
+
     auto end = std::chrono::steady_clock::now();
     auto reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
     std::cout << "Time for creating VTK-file:\t" << (double) reading_time.count() / 1000 << " s" << std::endl;
@@ -48,9 +65,11 @@ void separateData(
         std::vector<double> &kx,
         std::vector<double> &ky,
         std::vector<double> &kz,
+        std::vector<double> &phiArray,
         std::vector<double> &kx_s,
         std::vector<double> &ky_s,
         std::vector<double> &kz_s,
+        std::vector<double> &phiArray_s,
         std::string filename = "../data/sep_output.vtk") {
     const int z = 50;
     for (int y = 0; y < Ny + 1; ++y)
@@ -58,35 +77,49 @@ void separateData(
             kx_s.push_back(kx[x + y * Nx + z * Ny * Nx]);
             ky_s.push_back(ky[x + y * Nx + z * Ny * Nx]);
             kz_s.push_back(kz[x + y * Nx + z * Ny * Nx]);
+            phiArray_s.push_back(phiArray[x + y * Nx + z * Ny * Nx]);
         }
 
-    saveToVTK(kx_s, ky_s, kz_s, 60, 220, 1, filename);
+    saveToVTK(kx_s, ky_s, kz_s, phiArray_s, 60, 220, 1, filename);
 };
 
 
 
 /* Fill kx, ky, kz vectors with values from .dat file */
-void readData(std::ifstream &file,
+void readData(std::ifstream &file_perm,
+              std::ifstream &file_phi,
               std::vector<double> &kx,
               std::vector<double> &ky,
-              std::vector<double> &kz
+              std::vector<double> &kz,
+              std::vector<double> &phiArray
 ) {
     auto begin = std::chrono::steady_clock::now();
     try {
         std::string x, y, z;
         while (kx.size() != Nx * Ny * Nz) {
-            file >> x;
+            file_perm >> x;
             kx.push_back(std::stod(x));
         }
 
         while (ky.size() != Nx * Ny * Nz) {
-            file >> y;
+            file_perm >> y;
             ky.push_back(std::stod(y));
         }
 
         while (kz.size() != Nx * Ny * Nz) {
-            file >> z;
+            file_perm >> z;
             kz.push_back(std::stod(z));
+        }
+    } catch (...) {
+        std::cerr << "Data Error" << std::endl;
+        throw;
+    }
+
+    try {
+        std::string value;
+        while (phiArray.size() != Nx * Ny * Nz) {
+            file_phi >> value;
+            phiArray.push_back(std::stod(value));
         }
     } catch (...) {
         std::cerr << "Data Error" << std::endl;
@@ -97,5 +130,6 @@ void readData(std::ifstream &file,
     auto reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
     std::cout << "Time for reading file:\t\t" << (double) reading_time.count() / 1000 << " s" << std::endl;
     std::cout << "Size of mesh:\t\t\t" << Nx << "x" << Ny << "x" << Nz << std::endl;
-    file.close();
+    file_perm.close();
+    file_phi.close();
 };

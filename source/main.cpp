@@ -8,26 +8,29 @@
 
 /* Run all functions */
 int main(int argc, char **argv) {
-    std::ifstream file;
+    std::ifstream file_perm, file_phi;
     std::ofstream output;
-    std::string filename;
+    std::string filename_perm, filename_phi;
 
-    filename = (argc < 2) ? "../data/spe_perm.dat" : argv[1];
-    file.open(filename);
+    filename_perm = (argc < 2) ? "../data/spe_perm.dat" : argv[1];
+    filename_phi = (argc < 3) ? "../data/spe_phi.dat" : argv[2];
+    file_perm.open(filename_perm);
+    file_phi.open(filename_phi);
 
-    if (!file) {
+    if (!file_perm or !file_phi) {
         std::cerr << "Error:\tFile couldn't be opened" << std::endl;
         return -1;
     }
-    std::cout << "Read file:\t\t\t" << filename << std::endl;
+    std::cout << "Read file:\t\t\t" << filename_perm << std::endl;
+    std::cout << "Read file:\t\t\t" << filename_phi << std::endl;
 
-    std::vector<double> kx, ky, kz;
-    readData(file, kx, ky, kz);
+    std::vector<double> kx, ky, kz, phiArray;
+    readData(file_perm, file_phi, kx, ky, kz, phiArray);
 
 #if GET_SEPARATED_MESH
     std::cout << "\nSave separated layer with z = 50" << std::endl;
-    std::vector<double> kx_s, ky_s, kz_s;
-    separateData(kx, ky, kz, kx_s, ky_s, kz_s);
+    std::vector<double> kx_s, ky_s, kz_s, phiArray_s;
+    separateData(kx, ky, kz, phiArray, kx_s, ky_s, kz_s, phiArray_s);
 #endif
 
 #if CREATE_SEPARATED_MATRIX
@@ -38,7 +41,7 @@ int main(int argc, char **argv) {
 
 #if SAVE_ALL_MESH_AS_VTK
     std::cout << "\nSave all mesh" << std::endl;
-    saveToVTK(kx, ky, kz);
+    saveToVTK(kx, ky, kz, phiArray);
 #endif
 
     return 0;
