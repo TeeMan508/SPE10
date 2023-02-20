@@ -7,3 +7,5 @@ data/sep_output.vtk
 data/por_perm_case2a.zip
 data/A.mtx
 data/b.txt
+notebooks/.ipynb_checkpoints
+notebooks/solution.txt

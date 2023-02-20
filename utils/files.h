@@ -43,7 +43,7 @@ void saveToVTK(std::vector<double> &kx,
     output_file << "LOOKUP_TABLE default" << std::endl;
 
     for (int i = 0; i < shapeX * shapeY * shapeZ; ++i)
-        output_file << 0.5 << std::endl;
+        output_file << S_by_oil << std::endl;
 
     output_file << "POINT_DATA " << (shapeX + 1) * (shapeY + 1) * (shapeZ + 1) << std::endl;
     output_file << "CELL_DATA " << shapeX * shapeY * shapeZ << std::endl;

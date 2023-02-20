@@ -52,6 +52,48 @@ for i = 0 : n * m
 */
 
 
+/* Calculate well index for cell */
+double computeWellIndex(
+    double kx, double ky, double kz
+) 
+{
+    double value;
+    value = 
+    (2 * M_PI * hz * std::sqrt(kx * ky)) / 
+        (std::log2( 
+            (0.28 / rw) * 
+            (std::sqrt(hx * hx * std::sqrt(ky / kx) + hy * hy * std::sqrt(kx / ky))) / 
+            (std::pow((ky / kx), 1/4) + std::pow((kx / ky), 1/4) + skinFactor)
+            )
+        );
+    return value;
+}
+
+/* Calculate transitivity between 2 neighbouring cells */
+double computeTransability(
+        int x, int y, int z, std::string axis,
+        std::vector<double> &kx,
+        std::vector<double> &ky,
+        std::vector<double> &kz) {
+    double prevK, currK;
+    if (axis == "x") {
+        prevK = kx[ind(x - 1, y, z)];  // (x - 1) + y * Nx + z * Nx * Ny
+        currK = kx[ind(x, y, z)];      //  x + y * Nx + z * Nx * Ny
+    } else if (axis == "y") {
+        prevK = ky[ind(x, y - 1, z)];  //  x + (y - 1) * Nx + z * Nx * Ny
+        currK = ky[ind(x, y, z)];
+    } else if (axis == "z") {
+        prevK = kz[ind(x, y, z - 1)];
+        currK = kz[ind(x, y, z)];
+        std::cerr << "Only 2D examples now!" << std::endl;
+        throw;
+    } else {
+        std::cerr << "Axis Error";
+        throw;
+    }
+    return (2 * prevK * currK / (prevK + currK));
+};
+
 void get_SLAE(
     COO A,
     double b[Nx*Ny],
@@ -68,8 +110,9 @@ void get_SLAE(
 
         // Upper boundary
         if (i < Nx){
-              b[i] += -2 * ky[i] / (hy * hy) * dirichlet_up;
-              Tau2 = 2 * ky[i] / (hy * hy);
+            // b[i] += -2 * ky[i] / (hy * hy) * dirichlet_up;
+            b[i] += Neumann_up * ky[i];
+            Tau2 = 2 * ky[i] / (hy * hy);
         }
         else {
             Tau2 = 2 * ky[i] * ky[i-Nx] / ((hy^2) * (ky[i] + ky[i-Nx]));
@@ -78,7 +121,8 @@ void get_SLAE(
 
         // Left boundary
         if (i % Nx == 0){
-            b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_left);
+            // b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_left);
+            b[i] += Neumann_left * kx[i];
             Tau3 = 2 * kx[i] / (hx * hx);
         }
         else {
@@ -88,7 +132,8 @@ void get_SLAE(
 
         // Right boundary
         if ((i + 1) % Nx == 0){
-            b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_right);
+            // b[i] += -2 * kx[i] / (hx * hx) * (dirichlet_right);
+            b[i] += Neumann_right * kx[i];
             Tau1 = 2 * kx[i] / (hx * hx);
         }
         else {
@@ -98,7 +143,8 @@ void get_SLAE(
 
         // Bottom boundary
         if (i >= (Ny - 1) * Nx){
-            b[i] += -2 * ky[i] / (hy * hy) * dirichlet_down;
+            // b[i] += -2 * ky[i] / (hy * hy) * dirichlet_down;
+            b[i] += Neumann_down * ky[i];
             Tau4 = 2 * ky[i] / (hy * hy);
         }
         else {
@@ -106,7 +152,19 @@ void get_SLAE(
             A.insert_val(i, i+Nx, Tau4);
         }
         Tau0 = Tau1 + Tau2 + Tau3 + Tau4;
-        A.insert_val(i, i, -Tau0);
+
+        double WI = 0;
+        if (i == 1000) {
+            WI = computeWellIndex(kx[i], ky[i], kz[i]);
+            b[i] = WI * WellPressure1;
+        }
+
+        if (i == Nx*Ny - 1000) {
+            WI = computeWellIndex(kx[i], ky[i], kz[i]);
+            b[i] = WI * WellPressure2;
+        }
+
+        A.insert_val(i, i, -Tau0+WI);
     }
     auto end = std::chrono::steady_clock::now();
     auto reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
@@ -134,34 +192,8 @@ void get_SLAE(
 }
 
 
-/* Calculate transitivity between 2 neighbouring cells */
-double computeTransability(
-        int x, int y, int z, std::string axis,
-        std::vector<double> &kx,
-        std::vector<double> &ky,
-        std::vector<double> &kz) {
-    double prevK, currK;
-    if (axis == "x") {
-        prevK = kx[ind(x - 1, y, z)];  //(x - 1) + y * Nx + z * Nx * Ny
-        currK = kx[ind(x, y, z)];      //x + y * Nx + z * Nx * Ny
-    } else if (axis == "y") {
-        prevK = ky[ind(x, y - 1, z)];  //x + (y - 1) * Nx + z * Nx * Ny
-        currK = ky[ind(x, y, z)];
-    } else if (axis == "z") {
-        prevK = kz[ind(x, y, z - 1)];
-        currK = kz[ind(x, y, z)];
-        std::cerr << "Only 2D examples now!" << std::endl;
-        throw;
-    } else {
-        std::cerr << "Axis Error";
-        throw;
-    }
-    return (2 * prevK * currK / (prevK + currK));
-};
-
-
 std::array<double,3> d2p(double const &T, double const &T_prev, double const &T_next, std::string &axis) {
-    std::array<double ,3> sheme;
+    std::array<double ,3> scheme;
     double h;
     if (axis == "x") {
         h = hx;
@@ -177,8 +209,8 @@ std::array<double,3> d2p(double const &T, double const &T_prev, double const &T_
         std::cerr << "Axis Error";
         throw;
     }
-    sheme[0] = T_prev / (h * h);
-    sheme[1] = -2 * T / (h * h);
-    sheme[2] = T_next / (h * h);
-    return sheme;
+    scheme[0] = T_prev / (h * h);
+    scheme[1] = -2 * T / (h * h);
+    scheme[2] = T_next / (h * h);
+    return scheme;
 };
