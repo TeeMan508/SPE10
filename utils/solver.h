@@ -70,7 +70,7 @@ double computeWellIndex(
 }
 
 
-void get_SLAE(
+COO get_SLAE(
     COO A,
     double b[Nx*Ny],
     std::vector<double> kx,
@@ -165,5 +165,6 @@ void get_SLAE(
     reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
 
     std::cout << "Time for saving matrix A and vector b:\t\t" << (double) reading_time.count() / 1000 << " s" << std::endl;
+    return A;
 }
 
