@@ -25,5 +25,5 @@
 
 #define Neumann_up (0)
 #define Neumann_left (0)
-#define Neumann_right (10)
-#define Neumann_down (5)
+#define Neumann_right (0)
+#define Neumann_down (0)

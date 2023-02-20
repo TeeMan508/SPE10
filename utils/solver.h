@@ -8,7 +8,7 @@
 #define ind(x, y, z) ((x)+(y)*Nx+(z)*Nx*Ny)
 
 
-/*
+/*-----------------------------------------------------------------------------
                     S   C   H   E   M   E
          *
          |
@@ -25,6 +25,34 @@
          *
 
 
+
+           |                   |                  |
+           |                   |                  |
+           |                   |                  |
+           |                   |                  |
+           |                   |                  |
+           |                   |                  |
+ MATRIX =  |-------------------|------------------|
+           |                   |                  |
+           |                   |                  |
+           |         A         |                  |
+           |                   |                  |
+           |                   |                  |
+
+
+
+ now on zero time layer all p = 0
+
+
+ ---------------------
+ func S(i,j, p[i], p[j])
+ if p[i]>p[j] return s[i]
+ else return s[j]
+ ----------------------
+ k(s[i]) = 1
+
+ ---------------------
+check = true
 for i = 0 : n * m
     i = 6
     [1]: 2 * Kx[i] * Kx[i+1] / ((hx^2) * (Kx[i] + Kx[i+1])) = Tau1
@@ -41,7 +69,30 @@ for i = 0 : n * m
     A[i, i - Nx] = Tau2
     A[i, i + Nx] = Tau4
     b = 0
+    -*------------------*---------------------*-----------------*-------------------
+    CALCULATING RESIDUAL:
+    r_0[i] = phi[i] * (s[i]-s_initial[i])/dt - (+) { Tau1*(p[i]-p[i+1])*S(i,i+1) + Tau2*(p[i]-p[i-nx])*S(i,i-nx)+
+        +(Tau3*(p[i]-p[i-1])*S(i,i-1)+(Tau4*(p[i]-p[i+nx])*S(i,i+nx) }
+    if i==well_index {r_0[i] -= k(s[i])*WI*(p_well - p[i]) }
 
+
+    r_w[i] =  phi[i] * (-s[i]+s_initial[i])/dt - (+) { Tau1*(p[i]-p[i+1])*(1-S(i,i+1)) + Tau2*(p[i]-p[i-nx])*(1-S(i,i-nx))+
+        +(Tau3*(p[i]-p[i-1])*(1-S(i,i-1))+(Tau4*(p[i]-p[i+nx])*(1-S(i,i+nx)) }
+    if i==well_index {r_0[i] -= k(s[i])*WI*(p_well - p[i]) }
+
+    if (abs(r_o[i])+abs(r_w[i]))>eps{
+        check = false;
+    }
+    ---------------------------------------------------------------------
+    MAKING J-MATRIX
+
+
+
+
+
+
+
+ ------------------------------------------------------------------------
     if i < Nx:
         [2]: b = -2Ky[i] / (hy**2) * (dirichlet_up)
             A[i,i] += 2Ky[i] / (hy**2)
@@ -49,6 +100,13 @@ for i = 0 : n * m
             A[i,i] += 2Kx[i] / (hx**2)
 
                     S   C   H   E   M   E
+--------------------------------------------------------------------------
+
+
+
+
+
+
 */
 
 
@@ -86,8 +144,8 @@ COO get_SLAE(
 
         // Upper boundary
         if (i < Nx){
-             b[i] += -2 * ky[i] / (hy * hy) * Neumann_up;
-//            b[i] += Neumann_up * ky[i];
+//             b[i] += -2 * ky[i] / (hy * hy) * Neumann_up;
+            b[i] += Neumann_up * ky[i];
             Tau2 = 2 * ky[i] / (hy * hy);
         }
         else {
@@ -97,8 +155,8 @@ COO get_SLAE(
 
         // Left boundary
         if (i % Nx == 0){
-             b[i] += -2 * kx[i] / (hx * hx) * (Neumann_left);
-//            b[i] += Neumann_left * kx[i];
+//             b[i] += -2 * kx[i] / (hx * hx) * (Neumann_left);
+            b[i] += Neumann_left * kx[i];
             Tau3 = 2 * kx[i] / (hx * hx);
         }
         else {
@@ -108,8 +166,8 @@ COO get_SLAE(
 
         // Right boundary
         if ((i + 1) % Nx == 0){
-             b[i] += -2 * kx[i] / (hx * hx) * (Neumann_right);
-//            b[i] += Neumann_right * kx[i];
+//             b[i] += -2 * kx[i] / (hx * hx) * (Neumann_right);
+            b[i] += Neumann_right * kx[i];
             Tau1 = 2 * kx[i] / (hx * hx);
         }
         else {
@@ -119,8 +177,8 @@ COO get_SLAE(
 
         // Bottom boundary
         if (i >= (Ny - 1) * Nx){
-             b[i] += -2 * ky[i] / (hy * hy) * Neumann_down;
-//            b[i] += Neumann_down * ky[i];
+//             b[i] += -2 * ky[i] / (hy * hy) * Neumann_down;
+            b[i] += Neumann_down * ky[i];
             Tau4 = 2 * ky[i] / (hy * hy);
         }
         else {
