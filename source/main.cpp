@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+
 #include "../utils/files.h"
 #include "../utils/constants.h"
 #include "../utils/solver.h"
@@ -36,13 +37,16 @@ int main(int argc, char **argv) {
 #if CREATE_SEPARATED_MATRIX
     COO A;
     double b[Nx*Ny];
-    get_SLAE(A, b, kx_s, ky_s, kz_s);
+    get_SLAE(A, b, kx_s, ky_s,kz_s);
 #endif
 
 #if SAVE_ALL_MESH_AS_VTK
     std::cout << "\nSave all mesh" << std::endl;
     saveToVTK(kx, ky, kz, phiArray);
 #endif
+
+    system("python3 ../notebooks/Matrix.py frame_name");
+
 
     return 0;
 }
