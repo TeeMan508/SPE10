@@ -109,6 +109,14 @@ for i = 0 : n * m
 
 */
 
+double k(double s_i){
+    return 1;
+}
+
+double S(std::vector<double> &s, int i, int j, double p_i, double p_j){
+    if (p_i>p_j) {return s[i];}
+    else {return s[j];}
+}
 
 /* Calculate well index for cell */
 double computeWellIndex(
@@ -133,11 +141,23 @@ COO get_SLAE(
     double b[Nx*Ny],
     std::vector<double> kx,
     std::vector<double> ky,
-    std::vector<double> kz)
+    std::vector<double> kz,
+    std::vector<double> s,
+    std::vector<double> phi,
+    std::vector<double> p,
+    std::vector<double> s_initial,
+    std::vector<double> r_o,
+    std::vector<double> r_w,
+    )
 {
     std::cout << "\nStart creating matrix A and vector b" << std::endl;
     auto begin = std::chrono::steady_clock::now();
     double Tau0, Tau1, Tau2, Tau3, Tau4;
+    double tpso1, tpso2, tpso3, tpso4;
+    double tpsw1, tpsw2, tpsw3, tpsw4;
+
+
+
     for (int i = 0; i < Nx*Ny; ++i) {
 
         b[i] = 0;
@@ -151,6 +171,8 @@ COO get_SLAE(
         else {
             Tau2 = 2 * ky[i] * ky[i-Nx] / ((hy^2) * (ky[i] + ky[i-Nx]));
             A.insert_val(i, i - Nx, Tau2);
+            tpso2 = Tau2 * (p[i] - p[i - Nx]) * S(s, i, i - Nx, p[i], p[i - Nx]);
+            tpsw2 = Tau2*(p[i]-p[i-Nx])*(1-S(s, i, i - Nx, p[i], p[i - Nx]));
         }
 
         // Left boundary
@@ -162,6 +184,8 @@ COO get_SLAE(
         else {
             Tau3 = 2 * kx[i] * kx[i-1] / ((hx^2) * (kx[i] + kx[i-1]));
             A.insert_val(i, i - 1, Tau3);
+            tpso3 = Tau3 * (p[i] - p[i - 1]) * S(s, i, i - 1, p[i], p[i - 1]);
+            tpsw3 = Tau3*(p[i]-p[i-1])*(1-S(s, i, i - 1, p[i], p[i - 1]));
         }
 
         // Right boundary
@@ -173,6 +197,8 @@ COO get_SLAE(
         else {
             Tau1 = 2 * kx[i] * kx[i+1] / ((hx^2) * (kx[i] + kx[i+1]));
             A.insert_val(i, i + 1, Tau1);
+            tpso1 = Tau1 * (p[i] - p[i + 1]) * S(s, i, i + 1, p[i], p[i + 1]);
+            tpsw1 = Tau1*(p[i]-p[i+1])*(1-S(s,i,i+1,p[i], p[i+1]));
         }
 
         // Bottom boundary
@@ -184,21 +210,27 @@ COO get_SLAE(
         else {
             Tau4 = 2 * ky[i] * ky[i+Nx] / ((hy^2) * (ky[i] + ky[i+Nx]));
             A.insert_val(i, i+Nx, Tau4);
+            tpso4 = Tau4 * (p[i] - p[i + Nx]) * S(s, i, i + Nx, p[i], p[i + Nx]);
+            tpsw4 = Tau4*(p[i]-p[i+Nx])*(1-S(s, i, i + Nx, p[i], p[i + Nx]));
         }
         Tau0 = Tau1 + Tau2 + Tau3 + Tau4;
 
         double WI = 0;
-        if (i == 1000) {
+        if (i == well1_index) {
             WI = computeWellIndex(kx[i], ky[i], kz[i]);
-            b[i] += WI * WellPressure1;
+//            b[i] += WI * WellPressure1;
+            r_o[i] -= k(s[i])*WI*(WellPressure1 - p[i]);
         }
 
-        if (i == Nx*Ny - 1000) {
+        if (i == well2_index) {
             WI = computeWellIndex(kx[i], ky[i], kz[i]);
-            b[i] += WI * WellPressure2;
+//            b[i] += WI * WellPressure2;
+            r_o[i] -= k(s[i])*WI*(WellPressure2 - p[i]);
         }
 
         A.insert_val(i, i, -Tau0+WI);
+        r_o[i] = phi[i] * (s[i]-s_initial[i])/dt - (tpso1 + tpso2 + tpso3 + tpso4);
+        r_w[i] =  phi[i] * (-s[i]+s_initial[i])/dt - (tpsw1 + tpsw2 + tpsw3 + tpsw4);
     }
     auto end = std::chrono::steady_clock::now();
     auto reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
