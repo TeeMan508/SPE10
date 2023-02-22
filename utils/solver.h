@@ -356,7 +356,18 @@ COO get_SLAE(
 
 
 
+/*
+            delta p
+            delta s
+
+            s_prev = s
+            p_prev = p
+            p=p_prev+delta(p)
+            s=s_prev+delta(s)
+
+            */
         }
+
 
         t+=1;
     }
