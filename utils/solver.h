@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <array>
+#include <chrono>
 #include "constants.h"
 #include "COO.h"
 
@@ -160,7 +161,7 @@ COO get_SLAE(
 
     for (int i = 0; i < Nx*Ny; ++i) {
 
-        b[i] = 0;
+        b[i] = -1;
 
         // Upper boundary
         if (i < Nx){

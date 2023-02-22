@@ -71,7 +71,7 @@ void separateData(
         std::vector<double> &kz_s,
         std::vector<double> &phiArray_s,
         std::string filename = "../data/sep_output.vtk") {
-    const int z = 50;
+    const int z = 15;
     for (int y = 0; y < Ny + 1; ++y)
         for (int x = 0; x < Nx + 1; ++x) {
             kx_s.push_back(kx[x + y * Nx + z * Ny * Nx]);
