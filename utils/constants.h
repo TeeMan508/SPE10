@@ -13,7 +13,6 @@
 #define hy (1) // Step by y axis
 #define hz (1) // Step by z axis
 #define dt (1) // Step by time
-#define eps (0.001)
 
 #define dirichlet_up (0)
 #define dirichlet_left (0)
