@@ -129,7 +129,7 @@ public:
         return ja_for_ret;
     }
 
-    std::vector<double> get_ia() {
+    std::vector<double> get_a() {
         std::vector<double> a_for_ret = a;
         return a_for_ret;
     }

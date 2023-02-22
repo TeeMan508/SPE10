@@ -180,8 +180,9 @@ COO get_SLAE(
     while (t < T) {
         norm_o = 0;
         norm_w = 0;
+        A.clear();
         for (int i = 0; i < Nx * Ny; ++i) {
-            A.clear();
+
             Tau_o[0] = 0;
             Tau_w[0] = 0;
 
@@ -205,7 +206,7 @@ COO get_SLAE(
 
                 dro_dsi2 = Tau[2] * (p[i] - p[i - Nx]) * (p[i] > p[i - Nx]);
                 drw_dsi2 = -Tau[2] * (p[i] - p[i - Nx]) * (p[i] > p[i - Nx]);
-
+//                std::cout<<-Tau_o[2]<<std::endl;
                 A.insert_val(i, i - Nx, -Tau_o[2]);  //fill A1
                 A.insert_val(i + Nx * Ny, i - Nx, -Tau_w[2]);  //fill A2
                 A.insert_val(i, i + Nx * Ny -Nx, Tau[2] * (p[i] - p[i - Nx]) * (p[i] < p[i - Nx])); //fill A3
