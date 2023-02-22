@@ -164,15 +164,15 @@ COO get_SLAE(
     double dro_dsi0, dro_dsi1, dro_dsi2, dro_dsi3, dro_dsi4;
     double drw_dsi0, drw_dsi1, drw_dsi2, drw_dsi3, drw_dsi4;
 
-    std::vector<double> r_o;
-    std::vector<double> r_w;
+    double r_o[Nx*Ny];
+    double r_w[Nx*Ny];
 
     double A2i, A2j, A3i, A3j, A4i, A4j;
 
 
     bool check_eps = true;
     double t = 0;
-    double T = 10;
+    double T = 0.5;
     double norm_o;
     double norm_w;
     std::vector<double> s_prev = s;
@@ -294,8 +294,8 @@ COO get_SLAE(
                 A.insert_val(i, (i + Nx * Ny) + Nx, Tau[4] * (p[i] - p[i + Nx]) * (p[i] < p[i + Nx])); //fill A3
                 A.insert_val(i+Nx*Ny, (i + Nx * Ny) + Nx, -Tau[4] * (p[i] - p[i + Nx]) * (p[i] < p[i + Nx])); //fill A4
 
-                tpso4 = Tau_o[4] * (p[i] - p[i + Nx]) * S(s, i, i + Nx, p[i], p[i + Nx]);
-                tpsw4 = Tau_o[4] * (p[i] - p[i + Nx]) * (1 - S(s, i, i + Nx, p[i], p[i + Nx]));
+                tpso4 = Tau_o[4] * (p[i] - p[i + Nx]) * S(p[i], p[i + Nx], p[i], p[i + Nx]);
+                tpsw4 = Tau_o[4] * (p[i] - p[i + Nx]) * (1 - S(p[i], p[i + Nx], p[i], p[i + Nx]));
             }
 
             dro_dsi0 = dro_dsi1 + dro_dsi2 + dro_dsi3 + dro_dsi4 + phi[i] / dt;
@@ -325,22 +325,27 @@ COO get_SLAE(
                 drw_dsi0 -= WI * (WellPressure2 - p[i]) * (WellPressure2 < p[i]);
 
             }
+
             Tau_o[0] += Tau_o[1] + Tau_o[2] + Tau_o[3] + Tau_o[4];
             Tau_w[0] += Tau_w[1] + Tau_w[2] + Tau_w[3] + Tau_w[4];
 
             A.insert_val(i, i, Tau_o[0]);  //fill A1
+
             A.insert_val(i + Nx * Ny, i, Tau_o[0]);  //fill A2
+
             A.insert_val(i, i + Nx * Ny, dro_dsi0);  //fill A3
+
             A.insert_val(i+Nx*Ny, i + Nx * Ny, dro_dsi0);  //fill A4
 
             r_o[i] = phi[i] * (s[i] - s_prev[i]) / dt - (tpso1 + tpso2 + tpso3 + tpso4);
             r_w[i] = phi[i] * (-s[i] + s_prev[i]) / dt - (tpsw1 + tpsw2 + tpsw3 + tpsw4);
 
             b[i]-=r_o[i];
+
             b[i+Nx*Ny]-=r_w[i];
 
-            norm_o += r_o * r_o;
-            norm_w += r_w * r_w;
+            norm_o += r_o[i] * r_o[i];
+            norm_w += r_w[i] * r_w[i];
         }
         norm_o = sqrt(norm_o) + sqrt(norm_w);
         if (norm_o < eps) {
@@ -352,6 +357,8 @@ COO get_SLAE(
 
 
         }
+
+        t+=1;
     }
     auto end = std::chrono::steady_clock::now();
     auto reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);

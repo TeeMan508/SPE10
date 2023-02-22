@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 
 #if CREATE_SEPARATED_MATRIX
     COO A;
-    std::vector<double> phi;
+
     double b[Nx*Ny*2];
     std::vector<double> s;
     std::vector<double> p;
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
         s.push_back(0.75);
         p.push_back(100.);
     }
-    get_SLAE(A, b, kx_s, ky_s, kz_s,s,phi,p);
+    get_SLAE(A, b, kx_s, ky_s, kz_s,s,phiArray_s,p);
 #endif
 
 #if SAVE_ALL_MESH_AS_VTK
