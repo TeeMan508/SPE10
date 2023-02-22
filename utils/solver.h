@@ -259,7 +259,7 @@ COO get_SLAE(
             p_prev = p;
         }
         else {
-            //making JACOBIAN
+            //making JACOBIAN (JOPOGIKAN)
 
 
 
