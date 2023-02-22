@@ -146,7 +146,7 @@ double computeWellIndex(
 
 COO get_SLAE(
         COO A,
-        double b[Nx * Ny],
+        double b[2*Nx * Ny],
         std::vector<double> kx,
         std::vector<double> ky,
         std::vector<double> kz,
@@ -341,7 +341,6 @@ COO get_SLAE(
             r_w[i] = phi[i] * (-s[i] + s_prev[i]) / dt - (tpsw1 + tpsw2 + tpsw3 + tpsw4);
 
             b[i]-=r_o[i];
-
             b[i+Nx*Ny]-=r_w[i];
 
             norm_o += r_o[i] * r_o[i];
@@ -386,10 +385,11 @@ COO get_SLAE(
     std::ofstream file;
     std::cout << "Save vector b as:\t" << output_path_b << std::endl;
     file.open(output_path_b);
-    file << Nx * Ny << std::endl;
-    for (int i = 0; i < Nx * Ny; ++i) {
+    file << 2*Nx * Ny << std::endl;
+    for (int i = 0; i < 2*Nx * Ny; ++i) {
         file << b[i] << std::endl;
     }
+//    std::cout<<<<std::endl;
     file.close();
     end = std::chrono::steady_clock::now();
     reading_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
