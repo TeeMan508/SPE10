@@ -43,7 +43,7 @@ public:
 
     /* Insert value into the matrix */
     void insert_val(int row, int col, double value) {
-        if (value == 0){return;}
+        if (value == 0) { return; }
         if ((ia.empty()) ||
             ((row >= ia[ia.size() - 1]) && (col > ja[ja.size() - 1]))) {
             ia.push_back(row);
@@ -83,8 +83,7 @@ public:
         if (row > len_mat() - 1 || row > len_mat() - 1) {
             std::cerr << "out of range";
             throw;
-        }
-        else {
+        } else {
             int i = 0;
             while (ia[i] != row && i <= ia.size() - 1) {
                 i++;
@@ -120,29 +119,45 @@ public:
     }
 
 
-    void clear(){
-        ia={};
-        ja={};
-        a={};
-        return;
+    std::vector<int> get_ia() {
+        std::vector<int> ia_for_ret = ia;
+        return ia_for_ret;
     }
 
-    /* Print matrix */
-    void print_matrix() {
-        for (int i = 0; i < len_mat(); ++i) {
-            for (int j = 0; j < len_mat(); ++j) {
-                std::cout<<std::setw(5)<<this->operator()(i,j);
-            }
-            std::cout<<std::endl;
-        }
+    std::vector<int> get_ja() {
+        std::vector<int> ja_for_ret = ja;
+        return ja_for_ret;
     }
 
-    /* Save matrix in COO format to ["../data/A.mtx" = default]*/
-    void write_to_file(std::string filename = "../data/A.mtx"){
-        std::ofstream file;
-        file.open(filename);
-        for (int i = 0; i < ia.size(); ++i) {
-            file << ia[i] << " " << ja[i] << " " << a[i] << std::endl;
-        }
+    std::vector<double> get_ia() {
+        std::vector<double> a_for_ret = a;
+        return a_for_ret;
     }
+
+void clear() {
+    ia = {};
+    ja = {};
+    a = {};
+    return;
+}
+
+/* Print matrix */
+void print_matrix() {
+    for (int i = 0; i < len_mat(); ++i) {
+        for (int j = 0; j < len_mat(); ++j) {
+            std::cout << std::setw(5) << this->operator()(i, j);
+        }
+        std::cout << std::endl;
+    }
+}
+
+/* Save matrix in COO format to ["../data/A.mtx" = default]*/
+void write_to_file(std::string filename = "../data/A.mtx") {
+    std::ofstream file;
+    file.open(filename);
+    for (int i = 0; i < ia.size(); ++i) {
+        file << ia[i] << " " << ja[i] << " " << a[i] << std::endl;
+    }
+}
+
 };
