@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <array>
+#include <chrono>
 #include "constants.h"
 #include "COO.h"
 
@@ -204,7 +205,6 @@ COO get_SLAE(
 
                 dro_dsi2 = Tau[2] * (p[i] - p[i - Nx]) * (p[i] > p[i - Nx]);
                 drw_dsi2 = -Tau[2] * (p[i] - p[i - Nx]) * (p[i] > p[i - Nx]);
-
 
                 A.insert_val(i, i - Nx, -Tau_o[2]);  //fill A1
                 A.insert_val(i + Nx * Ny, i - Nx, -Tau_w[2]);  //fill A2
