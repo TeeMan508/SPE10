@@ -21,6 +21,7 @@
 #define rw (1)
 #define S_by_oil (0.75)
 #define skinFactor (0)
+#define eps (0.01)
 
 #define well1_index (1000)
 #define well2_index (Nx*Ny-1000)
