@@ -119,6 +119,14 @@ public:
         std::cout << a[a.size() - 1] << "]" << std::endl;
     }
 
+
+    void clear(){
+        ia={};
+        ja={};
+        a={};
+        return;
+    }
+
     /* Print matrix */
     void print_matrix() {
         for (int i = 0; i < len_mat(); ++i) {

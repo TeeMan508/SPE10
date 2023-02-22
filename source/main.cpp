@@ -31,12 +31,20 @@ int main(int argc, char **argv) {
     std::cout << "\nSave separated layer with z = 50" << std::endl;
     std::vector<double> kx_s, ky_s, kz_s, phiArray_s;
     separateData(kx, ky, kz, phiArray, kx_s, ky_s, kz_s, phiArray_s);
+
 #endif
 
 #if CREATE_SEPARATED_MATRIX
     COO A;
-    double b[Nx*Ny];
-    get_SLAE(A, b, kx_s, ky_s, kz_s);
+    std::vector<double> phi;
+    double b[Nx*Ny*2];
+    std::vector<double> s;
+    std::vector<double> p;
+    for (int i = 0; i < Nx*Ny; ++i) {
+        s.push_back(0.75);
+        p.push_back(100.);
+    }
+    get_SLAE(A, b, kx_s, ky_s, kz_s,s,phi,p);
 #endif
 
 #if SAVE_ALL_MESH_AS_VTK
