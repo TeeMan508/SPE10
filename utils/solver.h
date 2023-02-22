@@ -65,20 +65,14 @@ COO get_SLAE(
     double b[Nx*Ny],
     std::vector<double> kx,
     std::vector<double> ky,
-    std::vector<double> kz,
-    std::vector<double> s,
-    std::vector<double> phi,
-    std::vector<double> p,
-    std::vector<double> s_initial,
-    std::vector<double> r_o,
-    std::vector<double> r_w,
+    std::vector<double> kz
     )
 {
     std::cout << "\nStart creating matrix A and vector b" << std::endl;
     auto begin = std::chrono::steady_clock::now();
     double Tau0, Tau1, Tau2, Tau3, Tau4;
     double tpso1, tpso2, tpso3, tpso4;
-    double tpsw1, tpsw2, tpsw3, tpsw4;
+
 
 
 
