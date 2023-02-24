@@ -136,6 +136,58 @@ public:
             std::cout<<std::endl;
         }
     }
+    void translate_csr(std::vector<idx_t> &iia,std::vector<idx_t> &jja,std::vector<double> &aa){  
+        int *buf = new int[ja[ja.size() - 1] + 2];
+        for (int i = 0; i <ja[ja.size() - 1] + 2; i++){
+            buf[i] = 0;
+        }
+        for (int i = 0; i < a.size(); i++)
+        {
+            jja.push_back(ja[i]);
+            aa.push_back(a[i]);
+
+            buf[ia[i] + 1]++;
+        }
+        std::cout << std::endl;
+        for (int i = 0; i < ja[ja.size() - 1] + 2; i++)
+        {
+            buf[i + 1] += buf[i];
+        }
+        for (int i = 0; i < ja[ja.size() - 1] + 2; i++)
+        {
+            iia.push_back(buf[i]);
+        }
+
+    //    std::cout << std::endl;
+    //    for (int i = 0; i < 10; i++) {
+    //        std::cout << ia[i] << " ";
+    //    }
+    //    std::cout << std::endl;
+    //    for (int i = 0; i < 10; i++) {
+    //        std::cout << ja[i] << " ";
+    //    }
+    //    std::cout << std::endl;
+    //    for (int i = 0; i < 10; i++) {
+    //        std::cout << a[i] << " ";
+    //    }
+    //    std::cout << std::endl;
+    //
+    //    for (int i = 0; i < 10; i++) {
+    //        std::cout << aa[i] << " ";
+    //    }
+    //    std::cout << std::endl;
+    //    for (int i = 0; i < 10; i++) {
+    //        std::cout << jja[i] << " ";
+    //    }
+    //    std::cout << std::endl;
+    //    for (int i = 0; i < 10; i++) {
+    //        std::cout << iia[i] << " ";
+    //    }
+    //    std::cout << std::endl;
+
+
+
+    }
 
     /* Save matrix in COO format to ["../data/A.mtx" = default]*/
     void write_to_file(std::string filename = "../data/A.mtx"){
